@@ -5,8 +5,7 @@ from days.utilities import timer
 
 
 def check_lowest(data, x, y):
-    p = data[y][x]
-    return p < min(data[y-1][x], data[y+1][x], data[y][x-1], data[y][x+1])
+    return data[y][x] < min(data[y-1][x], data[y+1][x], data[y][x-1], data[y][x+1])
 
 
 @timer
@@ -46,9 +45,19 @@ def part02(data, low_points):
     return math.prod(basin_lengths[:3])
 
 
-if __name__ == "__main__":
+@timer
+def load_data():
     data = parser.load_rows_to_list("day09.txt", lambda l: [10] + [int(x) for x in l.strip()] + [10])
     data = [[10 for _ in data[0]]] + data + [[10 for _ in data[0]]]
+    return data
+
+
+@timer
+def main():
+    data = load_data()
     low_points, result = part01(data)
     print(result)
     print(part02(data, low_points))
+
+if __name__ == "__main__":
+    main()
