@@ -80,7 +80,6 @@ def load_data():
 @timer
 def main():
     data = load_data()
-    print(data)
     print(part01(data))
     print(part02(data))
 
