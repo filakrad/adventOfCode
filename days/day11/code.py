@@ -61,9 +61,6 @@ class Octopus:
     def __str__(self):
         return str(self.energy)
 
-    def __repr__(self):
-        return str(self.energy)
-
 
 class Grid2(Grid):
     def is_synchronised(self):
