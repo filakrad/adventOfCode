@@ -2,20 +2,20 @@ from days import parser
 from days.utilities import timer
 
 from queue import PriorityQueue
-import copy
+
 
 class Graph:
     neighbors = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
+    @timer
     def __init__(self, data):
         self.max_x = len(data[0])
         self.max_y = len(data)
         self.vertices = [(i, j) for j in range(self.max_y) for i in range(self.max_x)]
-        self.num_vertices = self.max_x * self.max_y
         self.edges = self.get_edges(data)
 
     def get_edges(self, data):
-        edges = {(i, j): [] for j in range(self.max_y) for i in range(self.max_x)}
+        edges = {v: [] for v in self.vertices}
         for e in edges:
             for n in self.neighbors:
                 cx = e[0] + n[0]
@@ -25,9 +25,10 @@ class Graph:
         return edges
 
 
+@timer
 def dijkstra(graph, start_vertex):
-    D = {v:float('inf') for v in graph.vertices}
-    D[start_vertex] = 0
+    distances = {v: float('inf') for v in graph.vertices}
+    distances[start_vertex] = 0
 
     visited = set()
 
@@ -39,16 +40,15 @@ def dijkstra(graph, start_vertex):
         visited.add(current_vertex)
         neighbors = graph.edges[current_vertex]
 
-        for neighbor in neighbors:
-            distance = neighbor[1]
-            if neighbor[0] not in visited:
-                old_cost = D[neighbor[0]]
-                new_cost = D[current_vertex] + distance
+        for neighbor, distance in neighbors:
+            if neighbor not in visited:
+                old_cost = distances[neighbor]
+                new_cost = distances[current_vertex] + distance
                 if new_cost < old_cost:
-                    pq.put((new_cost, neighbor[0]))
-                    D[neighbor[0]] = new_cost
+                    pq.put((new_cost, neighbor))
+                    distances[neighbor] = new_cost
 
-    return D
+    return distances
 
 
 def upscale_data(data):
@@ -85,7 +85,6 @@ def load_data():
 @timer
 def main():
     data = load_data()
-    print(data)
     print(part01(data))
     print(part02(data))
 
