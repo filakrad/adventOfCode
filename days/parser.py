@@ -46,6 +46,7 @@ def parse_two_times(row, delim1="->", delim2=",", func=int):
         out.append(tuple([func(x) for x in part.split(delim2)]))
     return out
 
+
 def load_two_things(file_name, function1, delimiter, function2):
     list1 = []
     list2 = []
@@ -61,3 +62,9 @@ def load_two_things(file_name, function1, delimiter, function2):
                 list2.append(function2(line))
             line = f.readline()
     return list1, list2
+
+
+def load_one_row(file_name, parse_function=empty_function):
+    with open(file_name, "r") as f:
+        line = f.readline()
+        return parse_function(line)
