@@ -59,7 +59,6 @@ class Number:
                     return True
         return False
 
-
     def do_all_splits(self):
         if self.type == 1 and self.value >= 10:
             self.split()
@@ -91,7 +90,6 @@ class Number:
             right.left_neighbor = new_number
         self.substitute = new_number
 
-
     def split(self):
         self.splitted = True
         left_val = self.value // 2
@@ -115,33 +113,9 @@ class Number:
             return self.value
         return 3*self.sub_numbers[0].magnitude() + 2*self.sub_numbers[1].magnitude()
 
+
 def add_numbers(x, y):
     return [x, y]
-
-
-def action_test(x, depth):
-    if type(x) is list:
-        if depth >= 4:
-            print("explosion", x, depth)
-            return 1
-        else:
-            return 0
-    else:
-        if x >= 10:
-            print("split", x)
-            return 2
-        else:
-            return 0
-
-
-def reduce_number(x, depth=0):
-    # if action_test(x, depth):
-
-    if type(x[0]) is list and depth < 4:
-        print(True)
-        reduce_number(x[0], depth+1)
-    else:
-        print(False)
 
 
 @timer
