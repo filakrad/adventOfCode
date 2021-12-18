@@ -8,38 +8,38 @@ neighbor = None
 
 
 class Number:
-    def __init__(self, x, depth=0, parent=None, main=None):
-        global neighbor
-        if main is None:
-            self.main = self
-        else:
-            self.main = main
+    def __init__(self, x, depth=0, parent=None, initial=False):
         self.depth = depth
         self.sub_numbers = []
         if type(x) is list:
             self.type = 0
-            self.sub_numbers = [Number(x[0], depth+1, self, self.main), Number(x[1], depth+1, self, self.main)]
+            self.sub_numbers = [Number(x[0], depth+1, self, initial), Number(x[1], depth+1, self, initial)]
         else:
             self.type = 1
-            self.left_neighbor = neighbor
+            self.left_neighbor = None
             self.right_neighbor = None
-            if neighbor is not None:
-                neighbor.right_neighbor = self
-            neighbor = self
+            if initial:
+                self.set_neighbors()
         self.parent = parent
         self.value = [x.value for x in self.sub_numbers] if self.type == 0 else x
         self.exploded = False
         self.substitute = None
         self.splitted = False
 
+    def set_neighbors(self):
+        global neighbor
+        self.left_neighbor = neighbor
+        self.right_neighbor = None
+        if neighbor is not None:
+            neighbor.right_neighbor = self
+        neighbor = self
+
     def __str__(self):
-        # self.fix_value(self)
         return str(self.value)
 
     def reduce(self):
-        # print(self.type, self.depth, self)
-        self.main.fix_value(self.main)
         while True:
+            self.fix_value()
             x = self.do_all_explosions()
             if x:
                 continue
@@ -55,7 +55,6 @@ class Number:
         else:
             for i, sub in enumerate(self.sub_numbers):
                 end = sub.do_all_explosions()
-                self.fix_value(self)
                 if end:
                     return True
         return False
@@ -68,23 +67,18 @@ class Number:
         else:
             for i, sub in enumerate(self.sub_numbers):
                 end = sub.do_all_splits()
-                self.fix_value(self)
                 if end:
                     return True
         return False
 
-    @staticmethod
-    def fix_value(num):
-        for i in num.sub_numbers:
-            i.fix_value(i)
-        num.value = [x.value for x in num.sub_numbers] if num.type == 0 else num.value
-
+    def fix_value(self):
+        for i in self.sub_numbers:
+            i.fix_value()
+        self.value = [x.value for x in self.sub_numbers] if self.type == 0 else self.value
 
     def explode(self):
-        global neighbor
-        neighbor = None
         self.exploded = True
-        new_number = Number(0, self.depth, self.parent, self.main)
+        new_number = Number(0, self.depth, self.parent)
         new_number.left_neighbor = self.sub_numbers[0].left_neighbor
         new_number.right_neighbor = self.sub_numbers[1].right_neighbor
         idx = self.parent.sub_numbers.index(self)
@@ -99,13 +93,11 @@ class Number:
 
 
     def split(self):
-        global neighbor
-        neighbor = None
         self.splitted = True
         left_val = self.value // 2
         right_val = self.value - left_val
         num = [left_val, right_val]
-        new_number = Number(num, self.depth, self.parent, self.main)
+        new_number = Number(num, self.depth, self.parent)
         new_number.sub_numbers[0].left_neighbor = self.left_neighbor
         new_number.sub_numbers[0].right_neighbor = new_number.sub_numbers[1]
         new_number.sub_numbers[1].left_neighbor = new_number.sub_numbers[0]
@@ -157,12 +149,10 @@ def part01(data):
     final_num = data[0]
     for a in data[1:]:
         num = add_numbers(final_num, a)
-        num = Number(num)
+        num = Number(num, initial=True)
         num.reduce()
         final_num = ast.literal_eval(str(num))
-    print(final_num)
-    final = Number(final_num)
-    print("mag", final.magnitude())
+    final = Number(final_num, initial=True)
     return final.magnitude()
 
 
@@ -173,11 +163,9 @@ def part02(data):
     # print(len(list(all_pairs)))
     for i, p in enumerate(all_pairs):
         num = add_numbers(p[0], p[1])
-        num = Number(num)
+        num = Number(num, initial=True)
         num.reduce()
         current_max = max(num.magnitude(), current_max)
-        if i % 100 == 0:
-            print(f"{i//100} % done")
     return current_max
 
 
