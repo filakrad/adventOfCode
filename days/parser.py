@@ -68,3 +68,19 @@ def load_one_row(file_name, parse_function=empty_function):
     with open(file_name, "r") as f:
         line = f.readline()
         return parse_function(line)
+
+
+def load_blocks(file_name, delim):
+    out = []
+    block = []
+    with open(file_name, "r") as f:
+        line = f.readline()
+        while line:
+            if line == delim:
+                out.append(block)
+                block = []
+            else:
+                block.append(line.strip())
+            line = f.readline()
+        out.append(block)
+    return out
