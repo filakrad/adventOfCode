@@ -18,9 +18,7 @@ class Picture:
         for r in range(1, len(bigger_pic)-1):
             for c in range(1, len(bigger_pic[0])-1):
                 num = bigger_pic[r-1][c-1:c+2] + bigger_pic[r][c-1:c+2] + bigger_pic[r+1][c-1:c+2]
-                power_list = [(2*x)**i for i, x in enumerate(reversed(num))]
-                power_list[0] = num[-1]
-                int_num = sum(power_list)
+                int_num = sum([x*(2**i) for i, x in enumerate(reversed(num))])
                 new_pic[r][c] = self.algorithm[int_num]
         next_padding = self.algorithm[0] if self.padding == 0 else self.algorithm[-1]
         new_pic = self.remove_padding(new_pic)
