@@ -42,14 +42,12 @@ class Scanner:
 
 
 def get_overlapping(b1, b2, l1=None, l2=None):
-    overlap = []
+    overlap = 0
     translation = tuple(b1[i]-b2[i] for i in range(3))
     for b in l2:
         tr_point = tuple(translation[i] + b[i] for i in range(3))
-        # print(b ,tr_point)
         if tr_point in l1:
-        # if any([(tr_point == e).all() for e in l1]):
-            overlap.append([tr_point])
+            overlap += 1
     return overlap
 
 
@@ -60,22 +58,17 @@ def get_new_translated_points(b1, b2, l2):
     return new_points
 
 
-def test_scanner(refferential, other):
+def test_scanner(referential, other):
     for h, rot in enumerate(GROUP.elements):
         new_points = other.rotated_beacons(rot)
         new_points = {tuple(x) for x in new_points}
-        # print(new_points)
-        for b1 in refferential:
+        for b1 in referential:
             for b2 in new_points:
-                overlap = get_overlapping(b1, b2, refferential, new_points)
-                # if len(overlap) > 1:
-                #     print(overlap)
-                if len(overlap) >= 12:
-                    print(overlap)
+                overlap = get_overlapping(b1, b2, referential, new_points)
+                if overlap >= 12:
                     scanner = tuple(b1[i] - b2[i] for i in range(3))
                     points = get_new_translated_points(b1, b2, new_points)
                     return scanner, points
-        # print(h, "\n", rot)
     return None, None
 
 
@@ -89,11 +82,11 @@ def max_distance(all_positions):
 
 @timer
 def part01(data):
-    refferential_scanner = data.pop(1)
-    all_points = {tuple(x) for x in refferential_scanner.beacons}
+    referential_scanner = data.pop(1)
+    all_points = {tuple(x) for x in referential_scanner.beacons}
     while data:
-        print(len(data))
         tested_scanner = data.pop(0)
+        print(len(data))
         print(tested_scanner.name)
         scanner, new_points = test_scanner(all_points, tested_scanner)
         if new_points is not None:
@@ -108,11 +101,11 @@ def part01(data):
 @timer
 def part02(data):
     all_scanner_positions = [(0, 0, 0)]
-    refferential_scanner = data.pop(1)
-    all_points = {tuple(x) for x in refferential_scanner.beacons}
+    referential_scanner = data.pop(0)
+    all_points = {tuple(x) for x in referential_scanner.beacons}
     while data:
-        print(len(data))
         tested_scanner = data.pop(0)
+        print(len(data))
         print(tested_scanner.name)
         scanner, new_points = test_scanner(all_points, tested_scanner)
         if new_points is not None:
@@ -138,7 +131,8 @@ def load_data():
 @timer
 def main():
     data = load_data()
-    print(part01(data))
+    # print(part01(data))
+    # part 2 prints result of part01 anyway
     print(part02(data))
 
 
