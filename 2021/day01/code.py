@@ -23,6 +23,6 @@ def get_sliding_increases(data):
 
 if __name__ == "__main__":
     data = load_rows_to_list("data01.txt", int)
-    # data = sample_data
+    data = sample_data
     print(get_increases(data))
     print(get_sliding_increases(data))
