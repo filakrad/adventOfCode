@@ -17,26 +17,24 @@ end
 function star01()
     score = 0
     for line in lines
-        midpoint = Int(length(line)/2)
-        half01 = Set(collect(line[1:midpoint]))
-        half02 = Set(collect(line[midpoint+1:end]))
-        error_type = pop!(intersect(half01, half02))
+        midpoint = length(line) ÷ 2
+        common = Set(line[1:midpoint]) ∩ Set(line[midpoint+1:end])
+        error_type = pop!(common)
         score += get_score(error_type)
     end
     return score
 end
 
-star01()
+println(star01())
 
 function star02()
+    score = 0
     for i = 1:3:length(lines)
-        common = intersect(Set(collect(lines[i])), Set(collect(lines[i+1])))
-        common = intersect(common, Set(collect(lines[i+2])))
-        println("$common")
-        break
+        common = Set(lines[i]) ∩ Set(lines[i+1]) ∩ Set(lines[i+2])
+        common_char = pop!(common)
+        score += get_score(common_char)
     end
-
-
+    return score
 end
 
-star02()
+println(star02())
