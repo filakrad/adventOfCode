@@ -2,29 +2,23 @@
 loaded = read("./day07.txt", String)
 lines = split(loaded, "\n")
 
+
 function get_dir_dict()
+    # Create dictionary (directory_path => size)
     current = "/"
     dirs = Dict(current => 0)
     for line in lines
         line_parts = split(line, " ")
-        if line_parts[1] == "\$"
-            if line_parts[2] == "cd"
-                if line_parts[3] == ".."
-                    curr_vec = split(current, "/")
-                    current = join(curr_vec[1:end-1], "/")
-                    if current == ""
-                        current = "/"
-                    end
-                elseif line_parts[3] == "/"
-                    current = "/"
-                    continue
-                else
-                    current *= "/" * line_parts[3]
-                end
-            elseif line_parts[2] == "ls"
-
-            end
-        elseif line_parts[1] == "dir"
+        if startswith(line, "\$ cd ..")
+            curr_vec = split(current, "/")
+            current = join(curr_vec[1:end-1], "/")
+        elseif startswith(line, "\$ cd /")
+            current = "/"
+        elseif startswith(line, "\$ cd")
+            current *= "/" * line_parts[3]
+        elseif startswith(line, "\$ ls")
+            nothing
+        elseif startswith(line, "dir")
             dirs[current * "/" * line_parts[2]] = 0
         else
             path = split(current, "/")
@@ -36,7 +30,6 @@ function get_dir_dict()
         end
 
     end
-
     return dirs
 end
 
@@ -57,13 +50,13 @@ function part02()
     needed = 30000000
     current_space = max - dirs["/"]
     to_clean = needed - current_space
-    possible_value = max
+    best_value = needed
     for (k, v) in dirs
-        if v > to_clean && v < possible_value
-            possible_value = v
+        if to_clean < v < best_value
+            best_value = v
         end
     end
-    return possible_value
+    return best_value
 end
 
 
