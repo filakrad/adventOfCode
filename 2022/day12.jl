@@ -20,7 +20,11 @@ function part01()
     y_size = length(lines[1])
     x_size = length(lines)
     while true
+        farthest = maximum(values(visited))
         for (k, v) in visited
+            if v != farthest
+                continue
+            end
             for dir in directions
                 new_x, new_y = k[1] + dir[1], k[2] + dir[2]
                 if haskey(visited, (new_x, new_y))
@@ -47,22 +51,23 @@ function part02()
     y_size = length(lines[1])
     x_size = length(lines)
     while true
+        farthest = maximum(values(visited))
         for (k, v) in visited
+            if v != farthest
+                continue
+            end
             for dir in directions
                 new_x, new_y = k[1] + dir[1], k[2] + dir[2]
-                # println("$new_x, $new_y, $i")
                 if haskey(visited, (new_x, new_y))
                     continue
                 end
                 if 1 <= new_x <= x_size && 1 <= new_y <= y_size
-                    # println("$new_x, $new_y, $(lines[k[1]][k[2]]), $(lines[new_x][new_y])")
                     if lines[k[1]][k[2]] == 'E' && (lines[new_x][new_y] == 'z' || lines[new_x][new_y] == 'y')
                         visited[(new_x, new_y)] = v+1
                     elseif lines[k[1]][k[2]] == 'b' && lines[new_x][new_y] == 'a' 
                         return v+1
                     elseif lines[k[1]][k[2]] - lines[new_x][new_y] <= 1 && lines[k[1]][k[2]] != 'E'
                         visited[(new_x, new_y)] = v+1
-                        # println("$(lines[k[1]][k[2]] - lines[new_x][new_y]), $visited")
                     end
                 end
             end
