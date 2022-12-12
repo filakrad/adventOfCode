@@ -3,11 +3,11 @@ using DataStructures
 loaded = read("./day11.txt", String)
 inputs = split(loaded, "\n\n")
 
-int = v -> parse(Int128, v)
+int = v -> parse(Int, v)
 
 mutable struct Monkey 
     id::Int
-    items::Deque{Int128}
+    items::Deque{Int}
     operation::Function
     divisible::Int
     if_true::Int
@@ -26,7 +26,7 @@ function fill_monkeys(monkeys)
         divisible = match(r"Test: divisible by (\d+)", lines[4])  |> m -> int(m[1])
         if_true = match(r"If true: throw to monkey (\d+)", lines[5])  |> m -> int(m[1]) + 1
         if_false = match(r"If false: throw to monkey (\d+)", lines[6])  |> m -> int(m[1]) + 1
-        push!(monkeys, Monkey(id, Deque{Int128}(), op, divisible, if_true, if_false, 0))
+        push!(monkeys, Monkey(id, Deque{Int}(), op, divisible, if_true, if_false, 0))
         for item in items
             push!(monkeys[id].items, item)
         end
