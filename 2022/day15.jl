@@ -15,29 +15,35 @@ for row in rows
     push!(parsed, pairs)
 end
 
+#precalculate distances - doesnt help much
+sensor_with_dist::Array{Tuple{Int64, Int64, Int64}} = [] #but typing does! Copied from martinjonas
+for (sensor, beacon) in parsed
+    push!(sensor_with_dist, (sensor[1], sensor[2], cityblock(sensor, beacon)))
+end
+
+
 function get_blocked(the_row)
-    row_blocked = []
-    for (sensor, beacon) in parsed
-        D = cityblock(sensor, beacon)
-        Dy = cityblock([sensor[1], the_row], sensor)
+    row_blocked::Array{Tuple{Int64, Int64}} = []
+    for (s1, s2, D) in sensor_with_dist
+        Dy = abs(the_row - s2)
         if Dy > D
             continue
         end
         num_blocked = D - Dy
-        push!(row_blocked, [sensor[1]-num_blocked, sensor[1]+num_blocked])
+        push!(row_blocked, (s1-num_blocked, s1+num_blocked))
     end
     sort!(row_blocked, by= x -> x[1])
     b1, b2 = row_blocked[1]
-    overlapped = []
+    overlapped::Array{Tuple{Int64, Int64}} = []
     for (x1, x2) in row_blocked
         if x1 > b2 
-            push!(overlapped, [b1, b2])
+            push!(overlapped, (b1, b2))
             b1, b2 = x1, x2
         else
             b2 = max(x2, b2)
         end
     end
-    push!(overlapped, [b1, b2])
+    push!(overlapped, (b1, b2))
     return overlapped
 end
 
@@ -66,4 +72,4 @@ function part02()
 end
 
 println(part01())
-println(part02())
+@time part02()
