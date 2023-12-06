@@ -30,7 +30,7 @@ def parse02(file_name):
 def part01(data):
     total = 1
     for t in data:
-        winning = [i*(t.time-i) for i in range(t.time) if i*(t.time-i) > t.distance]
+        winning = [True for i in range(t.time) if i*(t.time-i) > t.distance]
         total *= len(winning)
     return total
 

@@ -1,4 +1,5 @@
 import re
+import sys
 
 from y2023.utilities import timer
 
@@ -25,41 +26,60 @@ def parse(file_name):
 
 @timer
 def part01(data):
-    locations = []
-    for d, v in data["rest"].items():
-        v.sort(key=lambda x: x[0])
+    minimum = sys.maxsize
     for seed in data["seed"]:
         from_, to_ = None, "seed"
         current = seed
         while to_ != "location":
             key = next(x for x in data["rest"].keys() if x[0] == to_)
             from_, to_ = key
-            next_ = None
             for row in data["rest"][key]:
-                if current in range(row[1], row[1] + row[2]):
-                    next_ = row[0] + current - row[1]
+                if row[1] <= current < row[1] + row[2]:
+                    current = row[0] + current - row[1]
                     break
-
-            if next_ is None:
-                out_idx = current - sum(x[2] for x in data["rest"][key] if x[1] < current)
-                now = 0
-                for row in data["rest"][key]:
-                    if row[0] < now + out_idx:
-                        out_idx -= row[0] - now
-                        now += row[2]
-                    else:
-                        break
-                next_ = now + out_idx
-            # print(from_, to_, current, next_)
-
-            current = next_
-        locations.append(next_)
-    return min(locations)
+        minimum = min(minimum, current)
+    return minimum
 
 
 @timer
 def part02(data):
-    pass
+    seed_length = len(data["seed"])
+    seed_parts = list(zip([data["seed"][i] for i in range(0, seed_length, 2)], [data["seed"][i] for i in range(1, seed_length, 2)]))
+    minimum = sys.maxsize
+    min_seed = 0
+    step = 1000
+    for sp in seed_parts:
+        for seed in range(sp[0], sp[0] + sp[1], step):
+            from_, to_ = None, "seed"
+            current = seed
+            while to_ != "location":
+                key = next(x for x in data["rest"].keys() if x[0] == to_)
+                from_, to_ = key
+                for row in data["rest"][key]:
+                    if row[1] <= current < row[1] + row[2]:
+                        current = row[0] + current - row[1]
+                        break
+            if current < minimum:
+                minimum = current
+                min_seed = seed
+        print(f"part {sp} finished")
+
+    minimum = sys.maxsize
+    for seed in range(min_seed - step, min_seed + step):
+        if not any(sp[0] <= seed < sp[0] + sp[1] for sp in seed_parts):
+            continue
+        from_, to_ = None, "seed"
+        current = seed
+        while to_ != "location":
+            key = next(x for x in data["rest"].keys() if x[0] == to_)
+            from_, to_ = key
+            for row in data["rest"][key]:
+                if row[1] <= current < row[1] + row[2]:
+                    current = row[0] + current - row[1]
+                    break
+        if current < minimum:
+            minimum = current
+    return minimum
 
 
 if __name__ == "__main__":
