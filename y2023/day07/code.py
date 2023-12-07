@@ -19,6 +19,9 @@ class Type(Enum):
 card_dict = {str(i): i for i in range(2, 10)}
 card_dict.update({'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14})
 
+card_dict_2 = {str(i): i for i in range(2, 10)}
+card_dict_2.update({'T': 10, 'J': 1, 'Q': 12, 'K': 13, 'A': 14})
+
 
 class Hand:
     def __init__(self, line):
@@ -27,9 +30,8 @@ class Hand:
         self.cards = self.fill_cards(x)
         self.type = self.get_type()
 
-    def fill_cards(self, x):
-        card_dict = {str(i): i for i in range(2, 10)}
-        card_dict.update({'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14})
+    @staticmethod
+    def fill_cards(x):
         return [card_dict[c] for c in x[0]]
 
     def get_type(self):
@@ -67,10 +69,9 @@ class Hand02(Hand):
     def __init__(self, line):
         super().__init__(line)
 
-    def fill_cards(self, x):
-        card_dict = {str(i): i for i in range(2, 10)}
-        card_dict.update({'T': 10, 'J': 1, 'Q': 12, 'K': 13, 'A': 14})
-        return [card_dict[c] for c in x[0]]
+    @staticmethod
+    def fill_cards(x):
+        return [card_dict_2[c] for c in x[0]]
 
     def get_type(self):
         if 1 not in self.cards:
