@@ -10,6 +10,10 @@ def add_to_dict(dct, key, value):
         dct[key] = value
 
 
+def replace_str_index(text,index=0,replacement=''):
+    return f'{text[:index]}{replacement}{text[index+1:]}'
+
+
 def timer(func):
     """Print the runtime of the decorated function"""
     @functools.wraps(func)
