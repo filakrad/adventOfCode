@@ -3,6 +3,9 @@ import copy
 from utilities import timer
 
 
+DIRECTIONS = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+
+
 @timer
 def parse(file_name):
     data = []
@@ -15,7 +18,6 @@ def parse(file_name):
 @timer
 def part01(data_input):
     data = copy.deepcopy(data_input)
-    directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
     max_y = len(data) - 1
     max_x = len(data[0]) - 1
     start_y = [i for i, row in enumerate(data) if '^' in row][0]
@@ -24,24 +26,20 @@ def part01(data_input):
     dir_index = 0
     while True:
         data[curr_pos[1]][curr_pos[0]] = "X"
-        next_pos = (curr_pos[0] + directions[dir_index % 4][0], curr_pos[1] + directions[dir_index % 4][1])
+        next_pos = (curr_pos[0] + DIRECTIONS[dir_index % 4][0], curr_pos[1] + DIRECTIONS[dir_index % 4][1])
         if next_pos[0] < 0 or next_pos[0] > max_x or next_pos[1] < 0 or next_pos[1] > max_y:
             break
         while data[next_pos[1]][next_pos[0]] == "#":
             dir_index += 1
-            next_pos = (curr_pos[0] + directions[dir_index % 4][0], curr_pos[1] + directions[dir_index % 4][1])
+            next_pos = (curr_pos[0] + DIRECTIONS[dir_index % 4][0], curr_pos[1] + DIRECTIONS[dir_index % 4][1])
         curr_pos = next_pos
     return sum([x.count("X") for x in data])
 
 
-def check_for_loop(data_input):
-    data = copy.deepcopy(data_input)
-    directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
-    max_y = len(data) - 1
-    max_x = len(data[0]) - 1
-    start_y = [i for i, row in enumerate(data) if '^' in row][0]
-    start_x = data[start_y].index("^")
-    curr_pos = (start_x, start_y)
+def check_for_loop(data_input, start):
+    max_y = len(data_input) - 1
+    max_x = len(data_input[0]) - 1
+    curr_pos = start
     dir_index = 0
     visited = set()
     loop = False
@@ -51,12 +49,12 @@ def check_for_loop(data_input):
             loop = True
             break
         visited.add(step)
-        next_pos = (curr_pos[0] + directions[dir_index % 4][0], curr_pos[1] + directions[dir_index % 4][1])
+        next_pos = (curr_pos[0] + DIRECTIONS[dir_index % 4][0], curr_pos[1] + DIRECTIONS[dir_index % 4][1])
         if next_pos[0] < 0 or next_pos[0] > max_x or next_pos[1] < 0 or next_pos[1] > max_y:
             break
-        while data[next_pos[1]][next_pos[0]] == "#":
+        while data_input[next_pos[1]][next_pos[0]] == "#":
             dir_index += 1
-            next_pos = (curr_pos[0] + directions[dir_index % 4][0], curr_pos[1] + directions[dir_index % 4][1])
+            next_pos = (curr_pos[0] + DIRECTIONS[dir_index % 4][0], curr_pos[1] + DIRECTIONS[dir_index % 4][1])
         curr_pos = next_pos
     return loop
 
@@ -64,7 +62,6 @@ def check_for_loop(data_input):
 def part02(data_input):
 
     data = copy.deepcopy(data_input)
-    directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
     max_y = len(data) - 1
     max_x = len(data[0]) - 1
     start_y = [i for i, row in enumerate(data) if '^' in row][0]
@@ -74,20 +71,21 @@ def part02(data_input):
     path = set()
     while True:
         path.add(curr_pos)
-        next_pos = (curr_pos[0] + directions[dir_index % 4][0], curr_pos[1] + directions[dir_index % 4][1])
+        next_pos = (curr_pos[0] + DIRECTIONS[dir_index % 4][0], curr_pos[1] + DIRECTIONS[dir_index % 4][1])
         if next_pos[0] < 0 or next_pos[0] > max_x or next_pos[1] < 0 or next_pos[1] > max_y:
             break
         while data[next_pos[1]][next_pos[0]] == "#":
             dir_index += 1
-            next_pos = (curr_pos[0] + directions[dir_index % 4][0], curr_pos[1] + directions[dir_index % 4][1])
+            next_pos = (curr_pos[0] + DIRECTIONS[dir_index % 4][0], curr_pos[1] + DIRECTIONS[dir_index % 4][1])
         curr_pos = next_pos
 
     loops = 0
+    start = (start_x, start_y)
     for pos in path:
         tmp = data[pos[1]][pos[0]]
         data[pos[1]][pos[0]] = "#"
         if pos != (start_x, start_y):
-            if check_for_loop(data):
+            if check_for_loop(data, start):
                 loops += 1
         data[pos[1]][pos[0]] = tmp
 
